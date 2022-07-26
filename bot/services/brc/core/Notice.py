@@ -24,6 +24,13 @@ class Notices:
         await self.session.close()
 
     async def fetch(self, page: int = 1, limit: int = 10, search: str = '') -> dict:
+        """
+
+        :param page:
+        :param limit:
+        :param search: stringlike date in YYYY-mm-dd format / string query
+        :return: dict
+        """
         assert page > 0, f'expected (page > 0) got page={page}'
         req_data = {
             'draw': '0',
@@ -81,3 +88,35 @@ class Notices:
             for i in data:
                 yield i
         return
+
+    async def iter_from(self, date: str = '', file_id: str = ''):
+        assert date or file_id, "both params are empty, one of required"
+        # assert not (date and file_id), "both params are full, only one of required"
+
+        _data = await self.fetch()
+        data = _data['data']
+        if not data:
+            return
+        found = None
+        for index, i in zip(range(len(data), -1, -1), reversed(data)):
+            if not found:
+                if date and file_id:
+                    if i['don'] == date and i['filename'] == file_id:
+                        found = True
+                        continue
+                else:
+                    if date:
+                        # print(f'{i["don"]} == {date}')
+                        # print(i['don'] == date)
+                        if i['don'] == date:
+                            found = True
+                            # yield i
+                            continue
+                    if file_id:
+                        if i['filename'] == file_id:
+                            found = True
+                            # yield i
+                            continue
+            if found:
+                yield index, i
+                continue
