@@ -1,5 +1,4 @@
 import functools
-import logging
 
 
 def on_raw_type(_type):
