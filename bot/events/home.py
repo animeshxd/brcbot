@@ -12,9 +12,9 @@ from bot.mongo import mongo
 @client.on_message(filters=filters.private & filters.command('start'), group=1)
 @managed_event
 async def start(_c: Client, message: Message, *args, **kwargs):
-    result = await mongo.find_user(message.chat.id)
+    result = await mongo.user_find(message.chat.id)
     if not result:
-        button= ReplyKeyboardMarkup(
+        button = ReplyKeyboardMarkup(
             [
                 ['Yes! Subscribe'],
                 ['No']
@@ -23,7 +23,7 @@ async def start(_c: Client, message: Message, *args, **kwargs):
             one_time_keyboard=True
         )
         await db(_c.send_message(message.chat.id, "Would you like to subscribe for notices?", reply_markup=button))
-        await mongo.update(message.chat.id, stopped=False, subscribed=False)
+        await mongo.user_add(message.chat.id)
     else:
         await db(_c.send_message(message.chat.id, "Welcome Back!", reply_markup=buttons.home_buttons))
 
@@ -31,7 +31,7 @@ async def start(_c: Client, message: Message, *args, **kwargs):
 @client.on_raw_update()
 @on_raw_type(UpdateBotStopped)
 async def bot_stopped(_c: Client, update: UpdateBotStopped, *args, **kwargs):
-    await mongo.update(update.user_id, update.stopped)
+    await mongo.user_update(update.user_id, stopped=update.stopped)
 
 
 @client.on_message(group=1, filters=filters.private & filters.command('home') | filters.regex('Home'))
