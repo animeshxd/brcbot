@@ -4,11 +4,12 @@ from pyrogram import Client
 from pyrogram.types import ReplyKeyboardRemove, Message, InlineKeyboardButton, InlineKeyboardMarkup
 
 import bot.events.buttons as b
-from bot import db
-from bot import notice, conv
+from bot.services.brc import Notices
+from bot.services.cache import Cache
+from bot.services.conversation import Conversation
 
 
-def __parse(d: dict):
+def parse(d: dict):
     date = d.get('dop', '')
     subject = d.get('subject', ' ')
     file = d.get('filename', '')
@@ -23,14 +24,21 @@ def __parse(d: dict):
     text = f"""
 Date: {date}
 **{subject}**
-Please download the file for details
+Please download the file for details[.]({file if file else ''})
     """.strip()
 
     return text, button
 
 
-async def base(_c: Client, message: Message, text: str, search: str = '', limit_page: int = 0,
-               x: typing.AsyncGenerator = None):
+async def base(
+        _c: Client,
+        message: Message,
+        text: str,
+        notice: Notices,
+        cache: Cache,
+        conv: Conversation,
+        search: str = '', limit_page: int = 0,
+        x: typing.AsyncGenerator = None):
     if x is None:
         x = notice.iter_notices(search=search, limit_page=limit_page)
     await conv.put(message.chat.id, x)
@@ -39,16 +47,16 @@ async def base(_c: Client, message: Message, text: str, search: str = '', limit_
     async for i in conv.take_yield(message.chat.id):
         if flag:
             await m.delete()
-            await db(_c.send_message(message.chat.id, text))
+            await cache(_c.send_message(message.chat.id, text))
             flag = False
-        t, _ = __parse(i)
-        await db(_c.send_message(message.chat.id, t, reply_markup=_))
+        t, _ = parse(i)
+        await cache(_c.send_message(message.chat.id, t, reply_markup=_, disable_web_page_preview=False))
     if flag:
         await m.delete()
-        await db(_c.send_message(message.chat.id, 'No Notices were published', reply_markup=b.notice_buttons))
+        await cache(_c.send_message(message.chat.id, 'No Notices were published', reply_markup=b.notice_buttons))
         return
     if await conv.in_conversation(message.chat.id):
-        await db.one(_c.send_message(message.chat.id, '...', reply_markup=b.next_button))
+        await cache.one(_c.send_message(message.chat.id, '...', reply_markup=b.next_button))
     else:
-        await db(_c.send_message(message.chat.id, '_', reply_markup=b.notice_buttons))
+        await cache(_c.send_message(message.chat.id, '_', reply_markup=b.notice_buttons))
         # await db(_c.send_message(message.chat.id, 'Notices', reply_markup=b.notice_buttons))

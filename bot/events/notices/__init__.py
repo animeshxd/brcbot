@@ -1,2 +1,3 @@
-from bot.events.notices import notices
-from bot.events.notices import search
+from bot.events.notices.events import search, next, notices
+
+__all__ = ['notices', 'search', 'next']

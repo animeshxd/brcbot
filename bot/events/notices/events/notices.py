@@ -5,10 +5,10 @@ from pyrogram.types import Message, ForceReply
 
 from bot import client, db, notice
 from bot.decorators.managed_event import managed_event
-from bot.events import buttons as b
-from bot.events.notices.base import base
-from bot.events.notices.helpers import for_week_only
 from bot.decorators.unimplimented import unimplimented
+from bot.events import buttons as b
+from bot.events.notices.base.helpers import for_week_only
+from bot.events.notices.events import base
 
 
 @client.on_message(filters=filters.private & filters.regex('Notices|𝖡𝖺𝖼𝗄') | filters.command('notices'), group=4)
@@ -59,10 +59,11 @@ async def month(_c: Client, message: Message, *args, **kwargs):
     await base(_c, message, f'This Month - {now.strftime("%B, %Y")}', search=now.strftime('%Y-%m'))
 
 
-@client.on_message(filters=filters.private & filters.regex('by Date'), group=4)
+@client.on_message(filters=filters.private & filters.regex('By Date'), group=4)
 @managed_event
-@unimplimented
+@unimplimented(db)
 async def search_by_date(_c: Client, message: Message, *args, **kwargs):
+    # logging.info('called')
     pass
 
 # TODO: Implement Conversation with Produces Consumer
