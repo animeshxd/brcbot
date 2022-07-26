@@ -1,0 +1,3 @@
+[submodule "pyromongo"]
+	path = pyromongo
+	url = git@github.com:animeshxd/pyromongo.git
