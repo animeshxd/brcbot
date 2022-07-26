@@ -56,7 +56,7 @@ class Conversation:
             except Exception as _:
                 logging.error(traceback.format_exc())
                 await self.dismiss(chat_id)
-                return
+                raise _
 
     # async def do_signal(self, chat_id):
     #     async with self._lock:
