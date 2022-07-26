@@ -6,7 +6,7 @@ from bot.services.cache import Cache
 from bot.services.conversation import Conversation
 import config as V
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=V.LOG_LEVEL)
 client = Client(
     'pyro',
     api_id=V.API_ID,
