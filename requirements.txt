@@ -6,3 +6,4 @@ dnspython
 tgcrypto
 beautifulsoup4
 pymongo
+APScheduler
