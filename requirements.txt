@@ -1,9 +1,7 @@
-html5lib
 aiohttp
 pyrogram
 motor
 dnspython
 tgcrypto
-beautifulsoup4
 pymongo
 APScheduler
