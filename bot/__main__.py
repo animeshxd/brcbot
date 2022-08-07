@@ -4,7 +4,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from bot.mongo import mongo
 from bot.services.scheduler import scheduler
-from pyromongo.pyromongo import MongoStorage
+from pyromongo import MongoStorage
 
 if __name__ == '__main__':
     from bot import client, notice

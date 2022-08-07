@@ -5,3 +5,4 @@ dnspython
 tgcrypto
 pymongo
 APScheduler
+git+https://github.com/animeshxd/pyromongo
