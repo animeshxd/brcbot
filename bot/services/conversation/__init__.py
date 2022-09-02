@@ -19,13 +19,14 @@ class Conversation:
     async def dismiss(self, chat_id: int):
         async with self._lock:
             has = self._dict.get(chat_id, False)
-            if has:
-                try:
-                    await self._dict[chat_id].aclose()
-                except Exception:
-                    logging.error(traceback.format_exc())
-                finally:
-                    self._dict[chat_id] = None
+        if has:
+            try:
+                await has.aclose()
+            except Exception:
+                logging.error(traceback.format_exc())
+            finally:
+                async with self._lock:
+                    del self._dict[chat_id]
 
     async def in_conversation(self, chat_id: int) -> bool:
         async with self._lock:
