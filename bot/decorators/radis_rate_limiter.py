@@ -6,7 +6,7 @@ from pyrogram.client import Client
 from pyrogram.types import Message
 from bot.redisc import rd
 
-LIMIT = 5
+LIMIT = 7
 EXPIRE = timedelta(seconds=30)
 
 
