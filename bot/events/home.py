@@ -5,12 +5,14 @@ from pyrogram.types import Message, ReplyKeyboardMarkup
 from bot import client, db
 from bot.decorators.managed_event import managed_event
 from bot.decorators.on_raw_type import on_raw_type
+from bot.decorators.radis_rate_limiter import ratelimited
 from bot.events import buttons
 from bot.mongo import mongo
 
 
 @client.on_message(filters=filters.private & filters.command('start'), group=1)
 @managed_event
+@ratelimited()
 async def start(_c: Client, message: Message, *args, **kwargs):
     result = await mongo.user_find(message.chat.id)
     if not result:

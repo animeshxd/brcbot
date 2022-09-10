@@ -3,6 +3,7 @@ from pyrogram.types import Message, ReplyKeyboardRemove
 
 from bot import client, conv, db
 from bot.decorators.delete_from_sender import delete_from_sender
+from bot.decorators.radis_rate_limiter import ratelimited
 from bot.decorators.suppress_error import suppress_error
 from bot.events import buttons
 from bot.events.notices import base
@@ -11,6 +12,7 @@ from bot.events.notices import base
 @client.on_message(filters=filters.private & filters.regex('Next') | filters.command('next'), group=4)
 @delete_from_sender(db, True)
 @suppress_error(db)
+@ratelimited()
 async def next_(_c: Client, _m: Message, *args, **kwargs):
     await _m.delete()
     clr = await db.take_1(_m.chat.id)
