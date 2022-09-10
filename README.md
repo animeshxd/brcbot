@@ -22,4 +22,4 @@ ________________|
 
 ```
 ## TODO
- - implement cache and rate limiter
+ - implement cache and ~~rate limiter~~
