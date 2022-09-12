@@ -25,6 +25,7 @@ def if_failed(func):
             await client.send_message(ADMIN, str(e))
             # await if_failed_scheduler(client, *args, **kwargs)
         except Exception:
+            logging.exception("error")
             await client.send_message(ADMIN, f'```{traceback.format_exc()}```')
             # await if_failed_scheduler(client, *args, *kwargs)
 
@@ -37,6 +38,9 @@ async def scheduler(client: Client, mongo: MongoSession, notices: Notices, _sche
     subscribers = mongo.user_iter()
     send_to = []
     notices_ = ""
+    if not last:
+        # TODO: set latest as last
+        pass
     try:
         async for index, i in notices.iter_from(date=last.date, file_id=last.file_id):
             # text, button = parse(i)
@@ -66,7 +70,7 @@ async def scheduler(client: Client, mongo: MongoSession, notices: Notices, _sche
             try:
                 await client.send_message(i.id, notices_, disable_web_page_preview=True)
             except Exception as e:
-                logging.error(traceback.format_exc())
+                logging.exception(f"error occurs for user {i.id}")
                 continue
             send_to.append(i.id)
 
@@ -74,4 +78,4 @@ async def scheduler(client: Client, mongo: MongoSession, notices: Notices, _sche
     except Exception as _:
         if send_to:
             await mongo.users.update({'_id': {'$in': send_to}}, {'$set': {'notified': True}}, multi=True)
-        raise _
+        raise 

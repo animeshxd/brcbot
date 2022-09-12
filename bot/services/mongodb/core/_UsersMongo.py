@@ -27,7 +27,7 @@ class _UsersMongo(_MongoSession):
                           ):
         data = {'_id': _id, 'stopped': stopped, 'subscribed': subscribed, 'notified': notified}
         x = {k: v for k, v in data.items() if v is not None}
-        logging.info(f'update/insert: {x}')
+        logging.debug(f'update/insert: {x}')
         return await self.users.update_one({'_id': _id}, {'$set': x}, upsert=True)
 
     async def user_find(self, user: typing.Union[int, User]):

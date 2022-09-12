@@ -1,10 +1,9 @@
 import asyncio.exceptions
 import functools
 import logging
-import traceback
 
 from aiohttp import ServerDisconnectedError
-from pyrogram import Client
+from pyrogram.client import Client
 from pyrogram.types import Message
 
 from bot.services.cache import Cache
@@ -25,7 +24,7 @@ def suppress_error(cache: Cache):
                 await cache(_m.reply("ServerDisconnectedError: we got disconnected from server, try again later",
                                      reply_markup=home_buttons))
             except Exception as e:
-                logging.error(traceback.format_exc())
+                logging.exception(f"unhandled error for user {_m.chat.id}")
                 await cache(_m.reply("UnexpectedError: failed to handle this", reply_markup=home_buttons))
 
         return run

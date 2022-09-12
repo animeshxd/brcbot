@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import traceback
 import typing
 
 
@@ -23,7 +22,7 @@ class Conversation:
             try:
                 await has.aclose()
             except Exception:
-                logging.error(traceback.format_exc())
+                logging.exception(f"failed to dismiss conversation for user {chat_id}")
             finally:
                 async with self._lock:
                     del self._dict[chat_id]
@@ -55,7 +54,7 @@ class Conversation:
                 await self.dismiss(chat_id)
                 return
             except Exception as _:
-                logging.error(traceback.format_exc())
+                logging.exception(f"unhandled error for {chat_id}")
                 await self.dismiss(chat_id)
                 raise
 
