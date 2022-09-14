@@ -3,7 +3,7 @@ from pyrogram.types import Message, ReplyKeyboardRemove
 
 from bot import client, conv, db
 from bot.decorators.delete_from_sender import delete_from_sender
-from bot.decorators.radis_rate_limiter import ratelimited
+from bot.decorators.redis_rate_limiter import ratelimited
 from bot.decorators.suppress_error import suppress_error
 from bot.events import buttons
 from bot.events.notices import base
