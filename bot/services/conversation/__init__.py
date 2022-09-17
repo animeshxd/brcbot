@@ -16,9 +16,8 @@ class Conversation:
             self._dict[chat_id] = x
 
     async def dismiss(self, chat_id: int):
-        async with self._lock:
-            has = self._dict.get(chat_id, False)
-        if has:
+        has = await self.take(chat_id)
+        if has is not None:
             try:
                 await has.aclose()
             except Exception:
@@ -29,21 +28,19 @@ class Conversation:
 
     async def in_conversation(self, chat_id: int) -> bool:
         async with self._lock:
-            if self._dict.get(chat_id, None):
+            if self._dict.get(chat_id, False):
                 return True
         return False
 
-    async def take(self, chat_id):
+    async def take(self, chat_id) -> typing.Optional[typing.AsyncGenerator]:
         async with self._lock:
-            if await self.in_conversation(chat_id):
-                return self._dict.get(chat_id, None)
+            return self._dict.get(chat_id, None)
 
     async def take_yield(self, chat_id: int, limit: int = 6):
         idx: int = 0
-        async with self._lock:
-            get = self._dict.get(chat_id, None)
-            if get is None:
-                return
+        get = await self.take(chat_id)
+        if get is None:
+            return
         while True:
             if idx >= limit:
                 return
