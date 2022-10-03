@@ -1,12 +1,14 @@
 FROM python:3.10-bullseye
 
-COPY . /opt
+RUN mkdir -p /opt/app
 
-WORKDIR /opt
+COPY . /opt/app
 
-RUN python -m venv /app/venv
+WORKDIR /opt/app
 
-ENV PATH=/opt/venv/bin:$PATH
+RUN python -m venv /opt/app/venv
+
+ENV PATH=/opt/app/venv/bin:$PATH
 
 RUN apt update 
 
