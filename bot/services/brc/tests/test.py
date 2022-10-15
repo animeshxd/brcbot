@@ -1,7 +1,8 @@
 import asyncio
 import logging
 
-from bot import Notices, Conversation
+from bot.services.conversation import Conversation
+from bot.services.brc import Notices
 
 
 async def test():
@@ -9,16 +10,22 @@ async def test():
         # data = await notices.fetch(page=8)
         # print(data)
 
-        x = notices.iter_notices()
-        # print(await x.__anext__())
-        # print(await x.__anext__())
-        # print(await x.__anext__())
-        # async for i in x:
-        #     print(i)
-        # await x.aclose()
-        # async for i in x:
-        #     print(i)
+        # assert [i async for i in notices.iter_notices()], "empty notices.iter_notices()"
 
+        assert [i async for i in notices.iter_from(file_id="Notice_11102022_111.pdf")], "empty"
+
+
+async def test2():
+    async with Notices() as notices:
+        x = notices.iter_notices()
+        print(await x.__anext__())
+        print(await x.__anext__())
+        print(await x.__anext__())
+        async for i in x:
+            print(i)
+        await x.aclose()
+        async for i in x:
+            print(i)
         c = Conversation()
         await c.put(1, x)
         # await c.put(1, x)
@@ -33,4 +40,4 @@ async def test():
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
-    asyncio.new_event_loop().run_until_complete(test())
+    asyncio.new_event_loop().run_until_complete(test2())

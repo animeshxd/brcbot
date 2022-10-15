@@ -1,4 +1,4 @@
-from bot.services.brc.core.Notice import Notices
+from bot.services.brc.http.Notice import Notices
 
 
 async def schedule():
