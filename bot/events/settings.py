@@ -2,6 +2,7 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 
 from bot import db, client
+from bot.decorators.development_only import development_only
 from bot.decorators.managed_event import managed_event
 from bot.events import buttons
 from bot.mongo import mongo
@@ -34,15 +35,11 @@ async def unsubscribe(_c: Client, message: Message, *args, **kwargs):
 
 @client.on_message(filters=filters.private & filters.command('clear') | filters.regex('Clear History'), group=2)
 @managed_event
+@development_only
 async def clear_history(_c: Client, message: Message, *args, **kwargs):
     clear = await db.takeout(message.chat.id)
     user = await mongo.user_find(message.chat.id)
+    msg = "Successfully Cleared" if clear else 'We have nothing to Clear'
     if clear:
         await client.delete_messages(message.chat.id, message_ids=clear)
-        await db(client.send_message(
-            message.chat.id, 'Successfully Cleared',
-            reply_markup=buttons.setting_button(user.subscribed)
-            )
-        )
-    else:
-        await db(_c.send_message(message.chat.id, "We have nothing to Clear", reply_markup=buttons.setting_button(user.subscribed)))
+    await db(client.send_message(message.chat.id, msg, reply_markup=buttons.setting_button(user.subscribed)))

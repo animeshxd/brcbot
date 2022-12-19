@@ -5,10 +5,11 @@ from pyrogram.types import Message
 
 
 class Cache:
-    def __init__(self):
+    def __init__(self, dev: bool = False):
         self._db: typing.Dict[int, typing.List[int]] = {}
         self._one_db: typing.Dict[int, Message] = {}
         self._lock = asyncio.Lock()
+        self._dev = dev
 
     async def __call__(self, func: typing.Awaitable):
         message = await func
@@ -17,6 +18,8 @@ class Cache:
 
     async def safe_insert(self, message: Message):
         # logging.info(f'inserted {message.chat.id} -> {message.id}')
+        if not self._dev:
+            return
         async with self._lock:
             data = self._db.get(message.chat.id, [])
             if data:

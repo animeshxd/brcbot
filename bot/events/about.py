@@ -20,8 +20,11 @@ async def about_bot(_c: Client, message: Message, *args, **kwargs):
     text = """
     **About Bot**
     This is an unofficial notice bot for Burdwan Raj College.
+    
+    
+                                            source: [github](https://github.com/animeshxd/brcbot)
     """
-    await db(_c.send_message(message.chat.id, text, reply_markup=buttons.about_button))
+    await db(_c.send_message(message.chat.id, text, reply_markup=buttons.about_button, disable_web_page_preview=True))
 
 
 @client.on_message(filters=filters.private & filters.regex('About Burdwan Raj College') | filters.command('brc'), group=4)

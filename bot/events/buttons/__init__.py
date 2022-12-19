@@ -1,5 +1,8 @@
 from pyrogram.types import ReplyKeyboardMarkup
 
+import config
+from bot.const import profiles
+
 home_buttons = ReplyKeyboardMarkup(
 
     [
@@ -40,25 +43,23 @@ notice_buttons = ReplyKeyboardMarkup(
 """Notices"""
 
 
-def setting_button(subscribed: bool = None):
+def setting_button(subscribed: bool | None = None):
     """Settings"""
-    if subscribed is None:
-        return ReplyKeyboardMarkup(
-            [
-                ['Home'],
-                ['Clear History']
-            ],
+    menu = [['Home']]
+    if config.PROFILE is profiles.DEVELOPMENT:
+        menu = [['Home'], ['Clear History']]
 
-            resize_keyboard=True
-        )
-    return ReplyKeyboardMarkup(
-        [
+    if subscribed is None:
+        return ReplyKeyboardMarkup(menu, resize_keyboard=True)
+
+    menu = [['Home'], ['Subscribe'] if not subscribed else ['Unsubscribe']]
+    if config.PROFILE is profiles.DEVELOPMENT:
+        menu = [
             ['Home'],
             ['Subscribe'] if not subscribed else ['Unsubscribe'],
             ['Clear History']
-        ],
-        resize_keyboard=True
-    )
+        ]
+    return ReplyKeyboardMarkup(menu, resize_keyboard=True)
 
 
 next_button = ReplyKeyboardMarkup(

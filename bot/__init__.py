@@ -1,6 +1,8 @@
 import logging
 
 from pyrogram.client import Client
+
+from bot.const import profiles
 from bot.services.brc import Notices
 from bot.services.cache import Cache
 from bot.services.conversation import Conversation
@@ -13,6 +15,6 @@ client = Client(
     api_hash=API_HASH,
     bot_token=BOT_TOKEN,
 )
-db = Cache()
+db = Cache(PROFILE == profiles.DEVELOPMENT)
 conv = Conversation()
 notice = Notices()
