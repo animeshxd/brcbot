@@ -1,4 +1,4 @@
-from bot.services.brc import parser, raw
+from bot.services.notice.brc import raw, parser
 
 headers: dict = parser.parse_headers(raw.raw_headers)
 req_data: dict = parser.parse_requests_data(raw.raw_data)

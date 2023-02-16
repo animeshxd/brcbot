@@ -6,7 +6,7 @@ import traceback
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pyrogram.client import Client
 
-from bot.services.brc import Notices
+from bot.services.notice.brc import CollegeNoticeClient
 from bot.services.mongodb import MongoSession
 
 ADMIN = '@dotdml'
@@ -33,7 +33,7 @@ def if_failed(func):
 
 
 @if_failed
-async def scheduler(client: Client, mongo: MongoSession, notices: Notices, _scheduler: AsyncIOScheduler = None):
+async def scheduler(client: Client, mongo: MongoSession, notices: CollegeNoticeClient, _scheduler: AsyncIOScheduler = None):
     last = await mongo.notice_get_last_file_info()
     subscribers = mongo.user_iter()
     send_to = []

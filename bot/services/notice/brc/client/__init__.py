@@ -1,22 +1,19 @@
+from typing import AsyncGenerator, Tuple
+
 from aiohttp import CookieJar
 from aiohttp.client import ClientSession, ClientTimeout
 
-from bot.services.brc.base import headers, url_brc
+from bot.services.notice.brc.base import headers, url_brc
+from bot.services.notice.interface import NoticeClient
 
 
-class Notices:
+class CollegeNoticeClient(NoticeClient):
     cookie_jar = CookieJar(unsafe=True)
 
     def __init__(self):
         pass
 
-    async def init(self):
-        await self.__aenter__()
-
-    async def close(self):
-        await self.__aexit__(None, None, None)
-
-    async def __aenter__(self):
+    async def __aenter__(self) -> "NoticeClient":
         self.session = ClientSession(base_url=url_brc, headers=headers, timeout=ClientTimeout(total=20))
         return self
 
@@ -65,7 +62,7 @@ class Notices:
 
             return json_data
 
-    async def iter_notices(self, search: str = '', limit_page: int = 0):
+    async def iter_notices(self, search: str = '', limit_page: int = 0) -> AsyncGenerator[dict, None]:
         page = 1
         limit = 10
         _data = await self.fetch(page=page, limit=limit, search=search)
@@ -89,7 +86,7 @@ class Notices:
                 yield i
         return
 
-    async def iter_from(self, date: str = '', file_id: str = ''):
+    async def iter_from(self, date: str = '', file_id: str = '') -> AsyncGenerator[Tuple[int, dict], None]:
         assert date or file_id, "both params are empty, one of required"
         # assert not (date and file_id), "both params are full, only one of required"
 

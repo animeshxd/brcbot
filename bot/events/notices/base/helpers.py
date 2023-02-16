@@ -1,9 +1,9 @@
 import datetime
 
-from bot.services.brc import Notices
+from bot.services.notice.brc import CollegeNoticeClient
 
 
-async def for_week_only(notices: Notices, last: datetime.datetime = datetime.datetime.now() - datetime.timedelta(weeks=1)):
+async def for_week_only(notices: CollegeNoticeClient, last: datetime.datetime = datetime.datetime.now() - datetime.timedelta(weeks=1)):
     # print(last_week)
     _data = await notices.fetch()
     data = _data['data']
@@ -27,7 +27,7 @@ async def for_week_only(notices: Notices, last: datetime.datetime = datetime.dat
 
 
 async def test():
-    async with Notices() as n:
+    async with CollegeNoticeClient() as n:
         # await for_week_only(n)
         async for i in for_week_only(n):
             print(i)

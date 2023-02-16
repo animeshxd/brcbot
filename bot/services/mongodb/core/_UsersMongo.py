@@ -1,6 +1,7 @@
 import logging
 import typing
 
+from pymongo.results import UpdateResult
 from pyrogram.types import User
 
 from bot.services.mongodb.classes import MUser
@@ -24,10 +25,12 @@ class _UsersMongo(_MongoSession):
                           subscribed: bool = None,
                           notified: bool = None,
                           id: int = None
-                          ):
+                          ) -> UpdateResult:
+        if id:
+            _id = id
         data = {'_id': _id, 'stopped': stopped, 'subscribed': subscribed, 'notified': notified}
         x = {k: v for k, v in data.items() if v is not None}
-        logging.debug(f'update/insert: {x}')
+        logging.debug(f'update/insert: {{{_id}: {x}}}')
         return await self.users.update_one({'_id': _id}, {'$set': x}, upsert=True)
 
     async def user_find(self, user: typing.Union[int, User]):
@@ -36,6 +39,10 @@ class _UsersMongo(_MongoSession):
             return None
         return MUser(**found)
 
-    async def user_iter(self, subscribed: bool = True, stopped: bool = False, notified: bool = False):
+    async def user_iter(self,
+                        subscribed: bool = True,
+                        stopped: bool = False,
+                        notified: bool = False) -> typing.AsyncGenerator[MUser, None]:
         async for i in self.users.find({'subscribed': subscribed, 'stopped': stopped, 'notified': notified}):
             yield MUser(**i)
+        return

@@ -1,11 +1,11 @@
 from bot.services.mongodb import MongoSession
-from bot.services.brc import Notices
+from bot.services.notice.brc import CollegeNoticeClient
 from config import MONGO_SRV
 
 
 async def test():
 
-    async with Notices() as notices:
+    async with CollegeNoticeClient() as notices:
 
         mongo = MongoSession(MONGO_SRV)
         # await mongo.notice_upload_file_info(date='2022-07-21')

@@ -1,12 +1,12 @@
-from bot.services.brc import Notices
+from bot.services.notice.brc import CollegeNoticeClient
 
 
 async def test():
-    async with Notices() as notices:
+    async with CollegeNoticeClient() as notices:
         # async for i in notices.iter_until('2022-07-12', ):
         #     print(i)
             
-        async for i, d in notices.iter_from(file_id='Notice_12072022_87.pdf'):
+        async for i, d in notices.iter_from(file_id='Notice_06022023_157.pdf'):
             print(i, d)
 
 
