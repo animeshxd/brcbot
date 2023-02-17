@@ -4,7 +4,7 @@ from pyrogram import Client
 from pyrogram.types import ReplyKeyboardRemove, Message, InlineKeyboardButton, InlineKeyboardMarkup
 
 import bot.events.buttons as b
-from bot.services.brc import Notices
+from bot.services.notice.interface import NoticeClient
 from bot.services.cache import Cache
 from bot.services.conversation import Conversation
 
@@ -34,7 +34,7 @@ async def base(
         _c: Client,
         message: Message,
         text: str,
-        notice: Notices,
+        notice: NoticeClient,
         cache: Cache,
         conv: Conversation,
         search: str = '', limit_page: int = 0,

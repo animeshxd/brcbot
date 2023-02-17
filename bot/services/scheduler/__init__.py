@@ -6,7 +6,7 @@ import traceback
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pyrogram.client import Client
 
-from bot.services.brc import Notices
+from bot.services.notice.brc import CollegeNoticeClient
 from bot.services.mongodb import MongoSession
 
 ADMIN = '@dotdml'
@@ -15,6 +15,7 @@ ADMIN = '@dotdml'
 #     await asyncio.sleep(5000)
 #     await scheduler(*args, **kwargs)
 
+log = logging.getLogger(__name__)
 
 def if_failed(func):
     @functools.wraps(func)
@@ -25,7 +26,7 @@ def if_failed(func):
             await client.send_message(ADMIN, str(e))
             # await if_failed_scheduler(client, *args, **kwargs)
         except Exception:
-            logging.exception("error")
+            log.exception("error")
             await client.send_message(ADMIN, f'```{traceback.format_exc()}```')
             # await if_failed_scheduler(client, *args, *kwargs)
 
@@ -33,14 +34,14 @@ def if_failed(func):
 
 
 @if_failed
-async def scheduler(client: Client, mongo: MongoSession, notices: Notices, _scheduler: AsyncIOScheduler = None):
+async def scheduler(client: Client, mongo: MongoSession, notices: CollegeNoticeClient, _scheduler: AsyncIOScheduler = None):
     last = await mongo.notice_get_last_file_info()
-    subscribers = mongo.user_iter()
+    subscribers = mongo.user_iter(subscribed=True)
     send_to = []
     notices_ = ""
     if not last:
         # TODO: set latest as last
-        pass
+        return
     try:
         async for index, i in notices.iter_from(date=last.date, file_id=last.file_id):
             # text, button = parse(i)
@@ -59,9 +60,8 @@ async def scheduler(client: Client, mongo: MongoSession, notices: Notices, _sche
                        ) + notices_
             await mongo.notice_upload_file_info(date=i['don'], file_id=i['filename'])
         if not notices_:
-            logging.info('empty notices')
+            log.info('empty notices')
             return
-        await asyncio.sleep(10)
         idx: int = 0
         async for i in subscribers:
             idx += 1
@@ -70,12 +70,14 @@ async def scheduler(client: Client, mongo: MongoSession, notices: Notices, _sche
             try:
                 await client.send_message(i.id, notices_, disable_web_page_preview=True)
             except Exception as e:
-                logging.exception(f"error occurs for user {i.id}")
+                log.exception(f"error occurs for user {i.id}")
                 continue
             send_to.append(i.id)
 
         # print(notices_)
     except Exception as _:
         if send_to:
-            await mongo.users.update({'_id': {'$in': send_to}}, {'$set': {'notified': True}}, multi=True)
-        raise 
+            await mongo.user_update_many(send_to, notified=True)
+        raise
+    if not send_to:
+        log.debug("No one is subscribed")
