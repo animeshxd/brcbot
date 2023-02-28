@@ -46,14 +46,14 @@ notice_buttons = ReplyKeyboardMarkup(
 def setting_button(subscribed: bool | None = None):
     """Settings"""
     menu = [['Home']]
-    if config.PROFILE is profiles.DEVELOPMENT:
+    if config.PROFILE == profiles.DEVELOPMENT:
         menu = [['Home'], ['Clear History']]
 
     if subscribed is None:
         return ReplyKeyboardMarkup(menu, resize_keyboard=True)
 
     menu = [['Home'], ['Subscribe'] if not subscribed else ['Unsubscribe']]
-    if config.PROFILE is profiles.DEVELOPMENT:
+    if config.PROFILE == profiles.DEVELOPMENT:
         menu = [
             ['Home'],
             ['Subscribe'] if not subscribed else ['Unsubscribe'],
