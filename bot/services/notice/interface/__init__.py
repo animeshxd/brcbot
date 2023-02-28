@@ -19,13 +19,13 @@ class NoticeClient(ABC):
         pass
 
     @abstractmethod
-    async def fetch(self, page: int = 1, limit: int = 10, search: str = '') -> dict:
+    async def fetch(self, *args, **kwargs) -> any:
         pass
 
     @abstractmethod
-    async def iter_notices(self, search: str = '', limit_page: int = 0) -> AsyncGenerator[dict, None]:
+    async def iter_notices(self, *args, **kwargs) -> AsyncGenerator[any, None]:
         pass
 
     @abstractmethod
-    async def iter_from(self, date: str = '', file_id: str = '') -> AsyncGenerator[Tuple[int, dict], None]:
+    async def iter_from(self, *args, **kwargs) -> AsyncGenerator[any, None]:
         pass
