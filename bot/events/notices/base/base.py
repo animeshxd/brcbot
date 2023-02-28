@@ -4,18 +4,18 @@ from pyrogram import Client
 from pyrogram.types import ReplyKeyboardRemove, Message, InlineKeyboardButton, InlineKeyboardMarkup
 
 import bot.events.buttons as b
+from bot.services.notice.data import Notice
 from bot.services.notice.interface import NoticeClient
 from bot.services.cache import Cache
 from bot.services.conversation import Conversation
 
 
-def parse(d: dict):
-    date = d.get('dop', '')
-    subject = d.get('subject', ' ')
-    file = d.get('filename', '')
+def parse(d: Notice):
+    date = d.extra
+    subject = d.subject
+    file = d.fileurl
     button = None
     if file:
-        file = f'https://burdwanrajcollege.ac.in/docs/notices/{file}'
         button = InlineKeyboardMarkup(
             [
                 [InlineKeyboardButton(text='Download PDF', url=file)]

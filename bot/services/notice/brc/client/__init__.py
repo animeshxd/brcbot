@@ -1,9 +1,12 @@
+from datetime import datetime
 from typing import AsyncGenerator, Tuple
+from urllib.parse import urljoin
 
 from aiohttp import CookieJar
 from aiohttp.client import ClientSession, ClientTimeout
 
 from bot.services.notice.brc.base import headers, url_brc
+from bot.services.notice.data import Notice
 from bot.services.notice.interface import NoticeClient
 
 
@@ -62,7 +65,7 @@ class CollegeNoticeClient(NoticeClient):
 
             return json_data
 
-    async def iter_notices(self, search: str = '', limit_page: int = 0) -> AsyncGenerator[dict, None]:
+    async def iter_notices(self, search: str = '', limit_page: int = 0) -> AsyncGenerator[Notice, None]:
         page = 1
         limit = 10
         _data = await self.fetch(page=page, limit=limit, search=search)
@@ -83,7 +86,11 @@ class CollegeNoticeClient(NoticeClient):
             if not data:
                 break
             for i in data:
-                yield i
+                fileurl=urljoin("https://burdwanrajcollege.ac.in/docs/notices/", i.get('filename', ''))
+                _ = i.get('don', '')
+                date = datetime.strptime(_, "%Y-%m-%d") if _ else ''
+                subject = i.get("subject", '')
+                yield Notice(fileurl, date, subject, extra=i.get('dop', ''))
         return
 
     async def iter_from(self, date: str = '', file_id: str = '') -> AsyncGenerator[Tuple[int, dict], None]:
@@ -94,7 +101,7 @@ class CollegeNoticeClient(NoticeClient):
         data = _data['data']
         if not data:
             return
-        found = None
+        found = False
         for index, i in zip(range(len(data), -1, -1), reversed(data)):
             if not found:
                 if date and file_id:
@@ -115,5 +122,7 @@ class CollegeNoticeClient(NoticeClient):
                             # yield i
                             continue
             if found:
-                yield index, i
-                continue
+                fileurl=urljoin("https://burdwanrajcollege.ac.in/docs/notices/", i.get('filename', ''))
+                date = datetime.strptime(i.get('don', ''), "%Y-%m-%d")
+                subject = i.get("subject", '')
+                yield index, Notice(fileurl, date, subject)
