@@ -3,7 +3,7 @@ import datetime
 from pyrogram import Client, filters
 from pyrogram.types import Message, ForceReply
 
-from bot import client, db, notice
+from bot import client, db, college_notice_client
 from bot.decorators.managed_event import managed_event
 from bot.decorators.unimplimented import unimplimented
 from bot.events import buttons as b
@@ -51,7 +51,7 @@ async def week(_c: Client, message: Message, *args, **kwargs):
     now = datetime.datetime.now()
     last = now - datetime.timedelta(weeks=1)
     await base(_c, message, f'{now.strftime("%d %B, %Y")} - {last.strftime("%d %B, %Y")}',
-               x=for_week_only(notice, last))
+               x=for_week_only(college_notice_client, last))
 
 
 @client.on_message(filters=filters.private & filters.regex('This Month'), group=G)
