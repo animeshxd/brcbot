@@ -15,7 +15,7 @@ async def test():
         # send_to = []
         notices_ = ""
         try:
-            async for index, i in notices.iter_from('2022-07-14', 'Notice_14072022_88.pdf'):
+            async for index, i in notices.iter_after('2022-07-14', 'Notice_14072022_88.pdf'):
                 # text, button = parse(i)
                 # await client.send_message()
                 date = i.get('dop', '')

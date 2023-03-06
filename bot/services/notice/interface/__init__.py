@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import enum
 from typing import AsyncGenerator, Tuple
 
 
@@ -27,5 +28,12 @@ class NoticeClient(ABC):
         pass
 
     @abstractmethod
-    async def iter_from(self, *args, **kwargs) -> AsyncGenerator[any, None]:
+    async def iter_after(self, *args, **kwargs) -> AsyncGenerator[any, None]:
         pass
+
+
+class NoticeType(enum.Enum):
+    Examination: str
+    Admission: str
+    Results: str
+    

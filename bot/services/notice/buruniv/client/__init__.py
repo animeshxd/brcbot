@@ -7,15 +7,19 @@ from aiohttp import ClientSession, ClientTimeout
 from bs4 import BeautifulSoup, ResultSet, Tag
 from bot.services.notice.data import Notice
 
-from bot.services.notice.interface import NoticeClient
+from bot.services.notice.interface import NoticeClient, NoticeType
 from bot.services.notice.buruniv.base import headers
+from bot.services.notice.parser import get_filename
 
-class NoticeType(enum.Enum):
+class UGUniversityNoticeType(enum.Enum):
     Examination = "EXAM_UG"
     Admission = "ADMN_UG"
     Results = "EXRS_UG"
 
+
 log = logging.getLogger(__name__)
+
+
 class UGUniversityNoticeClient(NoticeClient):
     buruniv = "https://buruniv.ac.in"
     _buruniv = "https://buruniv.ac.in/bunew/"
@@ -27,8 +31,9 @@ class UGUniversityNoticeClient(NoticeClient):
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.session.close()
 
-    async def fetch(self, type: NoticeType) -> ResultSet[Tag]:
-        async with self.session.post("/bunew/AllFunctions.php", data = {"parentmenu": "NOT_CATEGORY", "childmenu": type.value}) as response:
+    async def fetch(self, type: UGUniversityNoticeType,  *args, **kwargs) -> ResultSet[Tag]:
+        async with self.session.post("/bunew/AllFunctions.php",
+                                     data={"parentmenu": "NOT_CATEGORY", "childmenu": type.value}) as response:
             if not response.ok:
                 raise RuntimeError(f"response status not ok POST[{response.status}][{response.url}]")
             html = await response.text()
@@ -37,20 +42,44 @@ class UGUniversityNoticeClient(NoticeClient):
 
             if not data:
                 raise ValueError("data is missing or empty")
-            
+
             return data
 
-    async def iter_notices(self, type: NoticeType, search: str | None = None) -> AsyncGenerator[Notice, None]:
+    async def iter_notices(self, type: UGUniversityNoticeType, search: str | None = None,  *args, **kwargs) -> AsyncGenerator[Notice, None]:
         result = await self.fetch(type)
         for i in result:
             subject = i.text.strip()
-            fileurl=urljoin(self._buruniv, i.get('href', ''))
+            filename = i.get('href', '')
+            fileurl = urljoin(self._buruniv, filename)
+            filename = get_filename(fileurl)
             if search:
-                if search.lower() in subject.lower():
-                    yield Notice(fileurl, subject=subject)
+                if search.lower() in subject.lower() or search.lower() in fileurl.lower():
+                    yield Notice(fileurl, filename, subject=subject)
+
             else:
-                yield Notice(fileurl, subject=subject)
+                yield Notice(fileurl, filename, subject=subject)
+
+    async def iter_after(self, file_id: str, type: UGUniversityNoticeType,  *args, **kwargs) -> AsyncGenerator[Tuple[int, Notice], None]:
+        found = False
+        result = await self.fetch(type=type)
+        for index, i in zip(range(len(result), -1, -1), reversed(result)):
+            subject = i.text.strip()
+            filename = i.get('href', '')
+            fileurl = urljoin(self._buruniv, filename)
+            filename = get_filename(fileurl)
+            # log.debug(f" {filename == file_id} {file_id, filename}")
+            if found:
+                # log.debug(f" {filename == file_id} {file_id, filename}")
+                yield index, Notice(fileurl, filename, subject=subject)
+            if file_id == filename:
+                found = True
+                continue
 
 
-    async def iter_from(self, date: str = '', file_id: str = '') -> AsyncGenerator[Tuple[int, dict], None]:
-        raise NotImplementedError
+
+
+                
+
+
+            
+

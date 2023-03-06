@@ -23,7 +23,7 @@ class CollegeNoticeClient(NoticeClient):
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.session.close()
 
-    async def fetch(self, page: int = 1, limit: int = 10, search: str = '') -> dict:
+    async def fetch(self, page: int = 1, limit: int = 10, search: str = '',  *args, **kwargs) -> dict:
         """
 
         :param page:
@@ -65,7 +65,7 @@ class CollegeNoticeClient(NoticeClient):
 
             return json_data
 
-    async def iter_notices(self, search: str = '', limit_page: int = 0) -> AsyncGenerator[Notice, None]:
+    async def iter_notices(self, search: str = '', limit_page: int = 0,  *args, **kwargs) -> AsyncGenerator[Notice, None]:
         page = 1
         limit = 10
         _data = await self.fetch(page=page, limit=limit, search=search)
@@ -86,14 +86,15 @@ class CollegeNoticeClient(NoticeClient):
             if not data:
                 break
             for i in data:
-                fileurl=urljoin("https://burdwanrajcollege.ac.in/docs/notices/", i.get('filename', ''))
+                filename = i.get('filename', '')
+                fileurl=urljoin("https://burdwanrajcollege.ac.in/docs/notices/", filename)
                 _ = i.get('don', '')
-                date = datetime.strptime(_, "%Y-%m-%d") if _ else ''
+                _date = datetime.strptime(_, "%Y-%m-%d") if _ else None
                 subject = i.get("subject", '')
-                yield Notice(fileurl, date, subject, extra=i.get('dop', ''))
+                yield Notice(fileurl, filename, _date, subject, extra=i.get('dop', ''))
         return
 
-    async def iter_from(self, date: str = '', file_id: str = '') -> AsyncGenerator[Tuple[int, dict], None]:
+    async def iter_after(self, date: str = '', file_id: str = '', *args, **kwargs) -> AsyncGenerator[Tuple[int, Notice], None]:
         assert date or file_id, "both params are empty, one of required"
         # assert not (date and file_id), "both params are full, only one of required"
 
@@ -122,7 +123,8 @@ class CollegeNoticeClient(NoticeClient):
                             # yield i
                             continue
             if found:
-                fileurl=urljoin("https://burdwanrajcollege.ac.in/docs/notices/", i.get('filename', ''))
-                date = datetime.strptime(i.get('don', ''), "%Y-%m-%d")
+                filename = i.get('filename', '')
+                fileurl=urljoin("https://burdwanrajcollege.ac.in/docs/notices/", filename)
+                _date = datetime.strptime(i.get('don', ''), "%Y-%m-%d")
                 subject = i.get("subject", '')
-                yield index, Notice(fileurl, date, subject)
+                yield index, Notice(fileurl, filename, _date, subject)

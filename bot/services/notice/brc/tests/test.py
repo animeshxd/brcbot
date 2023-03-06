@@ -30,9 +30,9 @@ class TestCollegeNoticeClient(unittest.IsolatedAsyncioTestCase):
         async with CollegeNoticeClient() as notices:
             self.assertGreater(len([i async for i in notices.iter_notices()]), 0, "empty notices.iter_notices()")
 
-    async def test_iter_from(self):
+    async def test_iter_after(self):
         async with CollegeNoticeClient() as notices:
-            self.assertGreater(len([i async for i in notices.iter_from(file_id="Notice_07022023_159.pdf")]), 0, "empty notices.iter_notices()")
+            self.assertGreater(len([i async for i in notices.iter_after(file_id="Notice_07022023_159.pdf")]), 0, "empty notices.iter_notices()")
 
 
 if __name__ == '__main__':
