@@ -42,4 +42,5 @@ async def clear_history(_c: Client, message: Message, *args, **kwargs):
     msg = "Successfully Cleared" if clear else 'We have nothing to Clear'
     if clear:
         await client.delete_messages(message.chat.id, message_ids=clear)
-    await db(client.send_message(message.chat.id, msg, reply_markup=buttons.setting_button(user.subscribed)))
+    if user:
+        await db(client.send_message(message.chat.id, msg, reply_markup=buttons.setting_button(user.subscribed)))
