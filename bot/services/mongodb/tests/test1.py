@@ -1,15 +1,18 @@
+from datetime import datetime
+import logging
 import unittest
 
 from pymongo.results import UpdateResult
 
 from bot.services.mongodb import MongoSession
+from bot.services.notice.brc.client import CollegeNoticeClient
 from config import MONGO_SRV
 
+log = logging.getLogger(__name__)
 
 class TestMongoSession(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
         self.session = MongoSession(MONGO_SRV, testing=True)
-        await self.session.init()
 
     async def asyncTearDown(self) -> None:
         print("dropped")
@@ -32,10 +35,11 @@ class TestMongoSession(unittest.IsolatedAsyncioTestCase):
             self.assertGreater(total, 0, "user_update failed")
 
     async def test_notice_methods(self):
-        date = '10-01-2003'
-        file_id = 'Notice_76066555555244444.pdf'
-        await self.session.notice_upload_file_info(date, file_id)
-        result = await self.session.notice_get_last_file_info()
+        date = datetime(day=7, month=2, year=2023)
+        file_id = 'Notice_07022023_160.pdf'
+        await self.session.notice_upload_file_info(date, file_id, CollegeNoticeClient)
+        result = await self.session.notice_get_last_file_info(CollegeNoticeClient)
+        log.info(result)
         self.assertEqual(date, result.date)
         self.assertEqual(file_id, result.file_id)
 

@@ -11,6 +11,7 @@ from bot.services.notice.interface import NoticeClient
 
 
 class CollegeNoticeClient(NoticeClient):
+    TAG = 'BRC'
     cookie_jar = CookieJar(unsafe=True)
 
     def __init__(self):
@@ -73,7 +74,12 @@ class CollegeNoticeClient(NoticeClient):
         if not data:
             return
         for i in data:
-            yield i
+            filename = i.get('filename', '')
+            fileurl=urljoin("https://burdwanrajcollege.ac.in/docs/notices/", filename)
+            _ = i.get('don', '')
+            _date = datetime.strptime(_, "%Y-%m-%d") if _ else None
+            subject = i.get("subject", '')
+            yield Notice(fileurl, filename, _date, subject, extra=i.get('dop', ''))
         if _data['recordsTotal'] <= limit:
             return
         while True:
@@ -94,10 +100,11 @@ class CollegeNoticeClient(NoticeClient):
                 yield Notice(fileurl, filename, _date, subject, extra=i.get('dop', ''))
         return
 
-    async def iter_after(self, date: str = '', file_id: str = '', *args, **kwargs) -> AsyncGenerator[Tuple[int, Notice], None]:
+    async def iter_after(self, date: str | datetime = '', file_id: str = '', *args, **kwargs) -> AsyncGenerator[Tuple[int, Notice], None]:
         assert date or file_id, "both params are empty, one of required"
         # assert not (date and file_id), "both params are full, only one of required"
-
+        if isinstance(date, datetime):
+            date = datetime.strftime(date, "%Y-%m-%d")
         _data = await self.fetch()
         data = _data['data']
         if not data:
@@ -127,4 +134,4 @@ class CollegeNoticeClient(NoticeClient):
                 fileurl=urljoin("https://burdwanrajcollege.ac.in/docs/notices/", filename)
                 _date = datetime.strptime(i.get('don', ''), "%Y-%m-%d")
                 subject = i.get("subject", '')
-                yield index, Notice(fileurl, filename, _date, subject)
+                yield index, Notice(fileurl, filename, _date, subject, extra=i.get('dop', ''))

@@ -21,6 +21,7 @@ log = logging.getLogger(__name__)
 
 
 class UGUniversityNoticeClient(NoticeClient):
+    TAG = 'buruniv'
     buruniv = "https://buruniv.ac.in"
     _buruniv = "https://buruniv.ac.in/bunew/"
 

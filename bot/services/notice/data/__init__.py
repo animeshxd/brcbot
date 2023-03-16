@@ -1,5 +1,6 @@
 import dataclasses
 from datetime import datetime, timedelta
+from typing import Any
 
 @dataclasses.dataclass
 class Notice:
@@ -7,4 +8,4 @@ class Notice:
     filename: str = ''
     date: datetime | None = None
     subject: str = ''
-    extra: any = None
+    extra: Any = ''

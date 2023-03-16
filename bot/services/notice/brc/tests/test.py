@@ -1,7 +1,9 @@
+import logging
 import unittest
 
 from bot.services.notice.brc import CollegeNoticeClient
 
+log = logging.getLogger(__name__)
 
 class TestCollegeNoticeClient(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
@@ -16,6 +18,7 @@ class TestCollegeNoticeClient(unittest.IsolatedAsyncioTestCase):
         self.assertGreater(len(result), 0, "got empty result")
         self.assertIn('data', result, "result['data']  not found")
         items = result['data']
+        log.info(items)
         self.assertGreater(len(items), 0, "got empty result['data']")
         with self.subTest(data=items[0]):
             self.assertIn('don', items[0], "result['data'][0]['don'] not found")

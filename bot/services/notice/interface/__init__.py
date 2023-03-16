@@ -1,9 +1,13 @@
 from abc import ABC, abstractmethod
 import enum
-from typing import AsyncGenerator, Tuple
+from typing import Any, AsyncGenerator, Tuple
+
+from bot.services.notice.data import Notice
 
 
 class NoticeClient(ABC):
+
+    TAG = 'notice'
 
     async def init(self):
         return await self.__aenter__()
@@ -20,15 +24,15 @@ class NoticeClient(ABC):
         pass
 
     @abstractmethod
-    async def fetch(self, *args, **kwargs) -> any:
+    async def fetch(self, *args, **kwargs) -> Any:
         pass
 
     @abstractmethod
-    async def iter_notices(self, *args, **kwargs) -> AsyncGenerator[any, None]:
+    async def iter_notices(self, *args, **kwargs) -> AsyncGenerator[Notice, None]:
         pass
 
     @abstractmethod
-    async def iter_after(self, *args, **kwargs) -> AsyncGenerator[any, None]:
+    async def iter_after(self, *args, **kwargs) -> AsyncGenerator[Any, None]:
         pass
 
 
