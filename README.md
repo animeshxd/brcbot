@@ -23,4 +23,4 @@ ________________|
 ```
 ## TODO
  - implement cache and ~~rate limiter~~
- - ADD university notices **
+ - ~~ADD university notices scheduler~~
