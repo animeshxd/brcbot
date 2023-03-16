@@ -21,9 +21,9 @@ class _UsersMongo(_MongoSession):
         return await self.user_update(_id, False, False, False)
 
     async def user_add_bulk(self, users: typing.Iterable[int],
-                            stopped: bool = None,
-                            subscribed: bool = None,
-                            notified: bool = None,) -> BulkWriteResult:
+                            stopped: bool | None = None,
+                            subscribed: bool | None = None,
+                            notified: bool | None = None,) -> BulkWriteResult:
         data = {'stopped': stopped,
                 'subscribed': subscribed, 'notified': notified}
         x = {k: v for k, v in data.items() if v is not None}
@@ -35,10 +35,10 @@ class _UsersMongo(_MongoSession):
 
     async def user_update(self,
                           _id: int,
-                          stopped: bool = None,
-                          subscribed: bool = None,
-                          notified: bool = None,
-                          id: int = None
+                          stopped: bool | None = None,
+                          subscribed: bool | None = None,
+                          notified: bool | None= None,
+                          id: int | None = None
                           ) -> UpdateResult:
         if id:
             _id = id
@@ -48,7 +48,10 @@ class _UsersMongo(_MongoSession):
         # logging.debug(f'update/insert: {{{_id}: {x}}}')
         return await self.users.update_one({'_id': _id}, {'$set': x}, upsert=True)
 
-    async def user_update_many(self, users: list[int], stopped: bool = None, subscribed: bool = None, notified: bool = None):
+    async def user_update_many(self, 
+                                users: list[int], stopped: bool | None = None,
+                                subscribed: bool | None = None,
+                                notified: bool | None = None):
         data = {'stopped': stopped,
                 'subscribed': subscribed, 'notified': notified}
         x = {k: v for k, v in data.items() if v is not None}
@@ -61,9 +64,9 @@ class _UsersMongo(_MongoSession):
         return MUser(**found)
 
     async def user_iter(self,
-                        subscribed: bool = None,
-                        stopped: bool = None,
-                        notified: bool = None) -> typing.AsyncGenerator[MUser, None]:
+                        subscribed: bool | None = None,
+                        stopped: bool | None = None,
+                        notified: bool | None = None) -> typing.AsyncGenerator[MUser, None]:
         data = {'stopped': stopped,
                 'subscribed': subscribed, 'notified': notified}
         x = {k: v for k, v in data.items() if v is not None}

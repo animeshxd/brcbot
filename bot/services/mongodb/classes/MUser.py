@@ -4,7 +4,7 @@ from dataclasses import dataclass
 @dataclass()
 class MUser:
     _id: int
-    id: int = None
+    id: int | None = None
     stopped: bool = True
     subscribed: bool = False
     notified: bool = False
