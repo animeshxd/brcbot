@@ -39,11 +39,12 @@ async def handle(
         notice: NoticeClient,
         cache: Cache,
         conv: Conversation,
-        search: str = '', limit_page: int = 0,
-        x: typing.AsyncGenerator = None):
-    if x is None:
-        x = notice.iter_notices(search=search, limit_page=limit_page)
-    await conv.put(message.chat.id, x)
+        search: str = '', 
+        limit_page: int = 0,
+        async_generator: typing.AsyncGenerator[Notice, None] | None = None):
+    if async_generator is None:
+        async_generator = notice.iter_notices(search=search, limit_page=limit_page)
+    await conv.put(message.chat.id, async_generator)
     flag: bool = True
     m = await _c.send_message(message.chat.id, '...', reply_markup=ReplyKeyboardRemove())
     async for i in conv.take_yield(message.chat.id):

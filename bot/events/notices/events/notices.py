@@ -51,7 +51,7 @@ async def week(_c: Client, message: Message, *args, **kwargs):
     now = datetime.datetime.now()
     last = now - datetime.timedelta(weeks=1)
     await handle(_c, message, f'{now.strftime("%d %B, %Y")} - {last.strftime("%d %B, %Y")}',
-               x=for_week_only(college_notice_client, last))
+               async_generator=for_week_only(college_notice_client, last))
 
 
 @client.on_message(filters=filters.private & filters.regex('This Month'), group=G)
