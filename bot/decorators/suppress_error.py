@@ -9,6 +9,8 @@ from pyrogram.types import Message
 from bot.services.cache import Cache
 from bot.events.buttons import home_buttons
 
+log = logging.getLogger(__name__)
+
 
 def suppress_error(cache: Cache):
     def decorator(func):
@@ -24,7 +26,7 @@ def suppress_error(cache: Cache):
                 await cache(_m.reply("ServerDisconnectedError: we got disconnected from server, try again later",
                                      reply_markup=home_buttons))
             except Exception as e:
-                logging.exception(f"unhandled error for user {_m.chat.id}")
+                log.exception(f"unhandled error for user {_m.chat.id}")
                 await cache(_m.reply("UnexpectedError: failed to handle this", reply_markup=home_buttons))
 
         return run
