@@ -7,7 +7,7 @@ from bot import client, db, college_notice_client
 from bot.decorators.managed_event import managed_event
 from bot.decorators.unimplimented import unimplimented
 from bot.events import buttons as b
-from bot.events.notices.base.helpers import for_week_only
+from bot.events.notices.base.utils import for_week_only
 from bot.events.notices.events import base
 
 G = 4

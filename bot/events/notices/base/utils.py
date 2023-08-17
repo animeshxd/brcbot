@@ -1,9 +1,11 @@
+import datetime
 import typing
 
 from pyrogram import Client
 from pyrogram.types import ReplyKeyboardRemove, Message, InlineKeyboardButton, InlineKeyboardMarkup
 
 import bot.events.buttons as b
+from bot.services.notice.brc.client import CollegeNoticeClient, get_dict_to_notice
 from bot.services.notice.data import Notice
 from bot.services.notice.interface import NoticeClient
 from bot.services.cache import Cache
@@ -60,3 +62,40 @@ async def base(
     else:
         await cache(_c.send_message(message.chat.id, '_', reply_markup=b.notice_buttons))
         # await db(_c.send_message(message.chat.id, 'Notices', reply_markup=b.notice_buttons))
+
+
+
+async def for_week_only(notices: CollegeNoticeClient, last: datetime.datetime = datetime.datetime.now() - datetime.timedelta(weeks=1)):
+    # print(last_week)
+    _data = await notices.fetch()
+    data = _data['data']
+    if not data:
+        return
+    point = None
+    for index, i in zip(range(len(data), -1, -1), reversed(data)):
+
+        _ = datetime.datetime.strptime(i['don'], '%Y-%m-%d')
+        # print(index, _ > last_week,  i)
+        if _ < last:
+            continue
+        else:
+            point = index
+            break
+    if point is None:  # sus
+        return
+
+    for i in data[:point]:
+        yield get_dict_to_notice(i)
+
+
+async def test():
+    async with CollegeNoticeClient() as n:
+        # await for_week_only(n)
+        async for i in for_week_only(n):
+            print(i)
+
+
+if __name__ == '__main__':
+    import asyncio
+
+    asyncio.new_event_loop().run_until_complete(test())
