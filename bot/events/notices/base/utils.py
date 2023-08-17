@@ -12,7 +12,7 @@ from bot.services.cache import Cache
 from bot.services.conversation import Conversation
 
 
-def parse(d: Notice):
+def parse_notice(d: Notice):
     date = d.extra
     subject = d.subject
     file = d.fileurl
@@ -32,7 +32,7 @@ Please download the file for details[.]({file if file else ''})
     return text, button
 
 
-async def base(
+async def handle(
         _c: Client,
         message: Message,
         text: str,
@@ -51,7 +51,7 @@ async def base(
             await m.delete()
             await cache(_c.send_message(message.chat.id, text))
             flag = False
-        t, _ = parse(i)
+        t, _ = parse_notice(i)
         await cache(_c.send_message(message.chat.id, t, reply_markup=_, disable_web_page_preview=False))
     if flag:
         await m.delete()

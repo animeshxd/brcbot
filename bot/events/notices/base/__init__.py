@@ -1,3 +1,3 @@
-from bot.events.notices.base.utils import base, parse, for_week_only
+from bot.events.notices.base.utils import handle, parse_notice, for_week_only
 
-__all__ = ['for_week_only', 'base', 'parse']
+__all__ = ['for_week_only', 'handle', 'parse_notice']

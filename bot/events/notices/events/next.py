@@ -22,7 +22,7 @@ async def next_(_c: Client, _m: Message, *args, **kwargs):
     await m.delete()
     if await conv.in_conversation(_m.chat.id):
         async for i in conv.take_yield(chat_id=_m.chat.id):
-            text, button = base.parse(i)
+            text, button = base.parse_notice(i)
             await db(_c.send_message(_m.chat.id, text, reply_markup=button))
         incnv = await conv.in_conversation(_m.chat.id)
         if incnv:

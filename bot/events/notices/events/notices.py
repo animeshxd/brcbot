@@ -8,7 +8,7 @@ from bot.decorators.managed_event import managed_event
 from bot.decorators.unimplimented import unimplimented
 from bot.events import buttons as b
 from bot.events.notices.base.utils import for_week_only
-from bot.events.notices.events import base
+from bot.events.notices.events import handle
 
 G = 4
 
@@ -29,20 +29,20 @@ async def search(_c: Client, message: Message, *args, **kwargs):
 @managed_event
 async def today(_c: Client, message: Message, *args, **kwargs):
     now = datetime.datetime.now()
-    await base(_c, message, f'Today - {now.strftime("%d %B, %Y")}', search=now.strftime('%Y-%m-%d'))
+    await handle(_c, message, f'Today - {now.strftime("%d %B, %Y")}', search=now.strftime('%Y-%m-%d'))
 
 
 @client.on_message(filters=filters.private & filters.regex('Latest'), group=G)
 @managed_event
 async def latest(_c: Client, message: Message, *args, **kwargs):
-    await base(_c, message, 'Latest', limit_page=1)
+    await handle(_c, message, 'Latest', limit_page=1)
 
 
 @client.on_message(filters=filters.private & filters.regex('Yesterday'), group=G)
 @managed_event
 async def yesterday(_c: Client, message: Message, *args, **kwargs):
     date = datetime.datetime.now() - datetime.timedelta(days=1)
-    await base(_c, message, f'Yesterday - {date.strftime("%d %B, %Y")}', search=date.strftime('%Y-%m-%d'))
+    await handle(_c, message, f'Yesterday - {date.strftime("%d %B, %Y")}', search=date.strftime('%Y-%m-%d'))
 
 
 @client.on_message(filters=filters.private & filters.regex('Last 7 Days'), group=G)
@@ -50,7 +50,7 @@ async def yesterday(_c: Client, message: Message, *args, **kwargs):
 async def week(_c: Client, message: Message, *args, **kwargs):
     now = datetime.datetime.now()
     last = now - datetime.timedelta(weeks=1)
-    await base(_c, message, f'{now.strftime("%d %B, %Y")} - {last.strftime("%d %B, %Y")}',
+    await handle(_c, message, f'{now.strftime("%d %B, %Y")} - {last.strftime("%d %B, %Y")}',
                x=for_week_only(college_notice_client, last))
 
 
@@ -58,7 +58,7 @@ async def week(_c: Client, message: Message, *args, **kwargs):
 @managed_event
 async def month(_c: Client, message: Message, *args, **kwargs):
     now = datetime.datetime.now()
-    await base(_c, message, f'This Month - {now.strftime("%B, %Y")}', search=now.strftime('%Y-%m'))
+    await handle(_c, message, f'This Month - {now.strftime("%B, %Y")}', search=now.strftime('%Y-%m'))
 
 
 @client.on_message(filters=filters.private & filters.regex('By Date'), group=G)
@@ -72,4 +72,4 @@ async def search_by_date(_c: Client, message: Message, *args, **kwargs):
 @client.on_message(filters=filters.private & filters.regex(r'\d{4}-\d{2}-\d{2}'), group=G)
 @managed_event
 async def on_date(_c: Client, message: Message, *args, **kwargs):
-    await base(_c, message, message.text, search=message.text)
+    await handle(_c, message, message.text, search=message.text)
