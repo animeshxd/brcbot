@@ -1,6 +1,6 @@
 import datetime
 
-from bot.services.notice.brc import CollegeNoticeClient
+from bot.services.notice.brc import CollegeNoticeClient, get_dict_to_notice
 
 
 async def for_week_only(notices: CollegeNoticeClient, last: datetime.datetime = datetime.datetime.now() - datetime.timedelta(weeks=1)):
@@ -23,7 +23,7 @@ async def for_week_only(notices: CollegeNoticeClient, last: datetime.datetime = 
         return
 
     for i in data[:point]:
-        yield i
+        yield get_dict_to_notice(i)
 
 
 async def test():
