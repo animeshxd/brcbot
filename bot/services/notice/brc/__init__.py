@@ -1,4 +1,4 @@
-from bot.services.notice.brc.client import CollegeNoticeClient
+from bot.services.notice.brc.client import CollegeNoticeClient, get_dict_to_notice
 
 
 async def schedule():
@@ -6,4 +6,4 @@ async def schedule():
     pass
 
 
-__all__ = ['CollegeNoticeClient']
+__all__ = ['CollegeNoticeClient', 'get_dict_to_notice']

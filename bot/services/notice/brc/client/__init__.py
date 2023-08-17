@@ -9,6 +9,13 @@ from bot.services.notice.brc.base import headers, url_brc
 from bot.services.notice.data import Notice
 from bot.services.notice.interface import NoticeClient
 
+def get_dict_to_notice(data: dict):
+    filename = data.get('filename', '')
+    fileurl=urljoin("https://burdwanrajcollege.ac.in/docs/notices/", filename)
+    _ = data.get('don', '')
+    _date = datetime.strptime(_, "%Y-%m-%d") if _ else None
+    subject = data.get("subject", '')
+    return Notice(fileurl, filename, _date, subject, extra=data.get('dop', ''))
 
 class CollegeNoticeClient(NoticeClient):
     TAG = 'BRC'
@@ -74,12 +81,7 @@ class CollegeNoticeClient(NoticeClient):
         if not data:
             return
         for i in data:
-            filename = i.get('filename', '')
-            fileurl=urljoin("https://burdwanrajcollege.ac.in/docs/notices/", filename)
-            _ = i.get('don', '')
-            _date = datetime.strptime(_, "%Y-%m-%d") if _ else None
-            subject = i.get("subject", '')
-            yield Notice(fileurl, filename, _date, subject, extra=i.get('dop', ''))
+            yield get_dict_to_notice(i)
         if _data['recordsTotal'] <= limit:
             return
         while True:
@@ -92,12 +94,7 @@ class CollegeNoticeClient(NoticeClient):
             if not data:
                 break
             for i in data:
-                filename = i.get('filename', '')
-                fileurl=urljoin("https://burdwanrajcollege.ac.in/docs/notices/", filename)
-                _ = i.get('don', '')
-                _date = datetime.strptime(_, "%Y-%m-%d") if _ else None
-                subject = i.get("subject", '')
-                yield Notice(fileurl, filename, _date, subject, extra=i.get('dop', ''))
+                yield get_dict_to_notice(i)
         return
 
     async def iter_after(self, date: str | datetime = '', file_id: str = '', *args, **kwargs) -> AsyncGenerator[Tuple[int, Notice], None]:
@@ -130,8 +127,4 @@ class CollegeNoticeClient(NoticeClient):
                             # yield i
                             continue
             if found:
-                filename = i.get('filename', '')
-                fileurl=urljoin("https://burdwanrajcollege.ac.in/docs/notices/", filename)
-                _date = datetime.strptime(i.get('don', ''), "%Y-%m-%d")
-                subject = i.get("subject", '')
-                yield index, Notice(fileurl, filename, _date, subject, extra=i.get('dop', ''))
+                yield index,  get_dict_to_notice(i)
