@@ -9,7 +9,6 @@ from bot.services.notice.interface import NoticeClient
 from bot.services.cache import Cache
 from bot.services.conversation import Conversation
 from config import *
-from config import PYROGRAM_LOG_LEVEL
 
 logging.basicConfig(level=LOG_LEVEL)
 logging.getLogger('pyrogram').setLevel(PYROGRAM_LOG_LEVEL)

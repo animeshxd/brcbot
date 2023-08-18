@@ -20,4 +20,4 @@ PROFILE: int = int(os.getenv("PROFILE", "4"))
 
 
 __all__ = ["API_ID", "API_HASH", "BOT_TOKEN", "MONGO_SRV", "LOG_LEVEL", "REDIS_HOST", "REDIS_PORT", "REDIS_USERNAME",
-           "REDIS_PASSWORD", "PROFILE"]
+           "REDIS_PASSWORD", "PROFILE", "PYROGRAM_LOG_LEVEL"]
