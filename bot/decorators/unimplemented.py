@@ -8,6 +8,6 @@ def unimplimented(cache: Cache):
     def decorator(func):
         @functools.wraps(func)
         async def run(_c, _m, *_a, **_k):
-            await cache(_m.reply("This feature is not implimented yet.", reply_markup=notice_buttons))
+            await cache(_m.reply("This feature is not implemented yet.", reply_markup=notice_buttons))
         return run
     return decorator
