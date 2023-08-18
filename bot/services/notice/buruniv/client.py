@@ -24,6 +24,11 @@ class UGUniversityNoticeClient(NoticeClient):
     TAG = 'buruniv'
     buruniv = "https://buruniv.ac.in"
     _buruniv = "https://buruniv.ac.in/bunew/"
+    """
+    https://www.buruniv.ac.in/Demo/Template.php?menu=NOT_EXAM&submenu=EXAM_UG
+    https://www.buruniv.ac.in/Demo/Template.php?menu=NOT_EXAM&submenu=EXAM_PS
+    
+    """
 
     async def __aenter__(self) -> "NoticeClient":
         self.session = ClientSession(base_url=self.buruniv, headers=headers, timeout=ClientTimeout(total=20))
@@ -33,13 +38,13 @@ class UGUniversityNoticeClient(NoticeClient):
         await self.session.close()
 
     async def fetch(self, type: UGUniversityNoticeType,  *args, **kwargs) -> ResultSet[Tag]:
-        async with self.session.post("/bunew/AllFunctions.php",
-                                     data={"parentmenu": "NOT_CATEGORY", "childmenu": type.value}) as response:
+        async with self.session.get("/Demo/Template.php",
+                                    params={"menu": "NOT_EXAM", "submenu": type.value}) as response:
             if not response.ok:
                 raise RuntimeError(f"response status not ok POST[{response.status}][{response.url}]")
             html = await response.text()
             soup = BeautifulSoup(html, 'lxml')
-            data = soup.select(".content_list > ol > li > a")
+            data = soup.select("ol.notice_content_list > li > a")
 
             if not data:
                 raise ValueError("data is missing or empty")
@@ -79,8 +84,8 @@ class UGUniversityNoticeClient(NoticeClient):
 
 
 
-                
 
 
-            
+
+
 
