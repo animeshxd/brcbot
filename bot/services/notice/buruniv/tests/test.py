@@ -24,8 +24,17 @@ class TestUGUniversityNoticeClient(unittest.IsolatedAsyncioTestCase):
         async for i in self.client.iter_notices(type=UGUniversityNoticeType.Examination, search="BCA"):
             log.debug(i)
 
+    async def test_iter_notices_all(self):
+        for type in [UGUniversityNoticeType.Examination,
+                     UGUniversityNoticeType.Results,
+                     UGUniversityNoticeType.Admission]:
+            log.debug(f"++++++++++++++ {type} ++++++++++++++++")
+            async for i in self.client.iter_notices(type):
+                log.debug(i)
+
+
     async def test_iter_after(self):
-        async for i in self.client.iter_after(type=UGUniversityNoticeType.Examination, file_id='CE_20230137_NOT_WEBPAGE.pdf'):
+        async for i in self.client.iter_after(type=UGUniversityNoticeType.Examination, file_id='20231043_CE.pdf'):
             log.debug(i)
             
 
