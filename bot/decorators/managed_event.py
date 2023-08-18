@@ -12,7 +12,7 @@ def managed_event(func):
     @delete_from_sender(db, True)
     @managed_conversation(db, conv)
     @suppress_error(db)
-    @ratelimited()
+    @ratelimited(db)
     async def run(client, event, *args, **kwargs):
         return await func(client, event, *args, **kwargs)
 

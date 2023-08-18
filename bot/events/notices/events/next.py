@@ -12,7 +12,7 @@ from bot.events.notices import base
 @client.on_message(filters=filters.private & filters.regex('Next') | filters.command('next'), group=4)
 @delete_from_sender(db, True)
 @suppress_error(db)
-@ratelimited()
+@ratelimited(db)
 async def next_(_c: Client, _m: Message, *args, **kwargs):
     await _m.delete()
     clr = await db.take_1(_m.chat.id)

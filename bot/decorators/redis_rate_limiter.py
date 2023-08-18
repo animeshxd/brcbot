@@ -12,6 +12,7 @@ EXPIRE = timedelta(seconds=30)
 log = logging.getLogger(__name__)
 
 def ratelimited(limit=LIMIT, expires=EXPIRE):
+def ratelimited(cache, limit=LIMIT, expires=EXPIRE, ):
     def decorator(func):
         @functools.wraps(func)
         async def run(_c: Client, _m: Message, *args, **kwargs):
@@ -21,7 +22,7 @@ def ratelimited(limit=LIMIT, expires=EXPIRE):
             if r > limit:
                 ttl = await rd.ttl(_m.chat.id)
                 log.debug(f"request times {r} exceed for user {_m.chat.id}")
-                await _m.reply(f"Too many requests within {expires.seconds} seconds, wait {ttl} seconds")
+                await cache(_m.reply(f"Too many requests within {expires.seconds} seconds, wait {ttl} seconds"))
                 return
             log.debug(f"request times {r} for user {_m.chat.id}")
             await func(_c, _m, *args, **kwargs)
