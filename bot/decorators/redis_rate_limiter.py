@@ -11,7 +11,7 @@ EXPIRE = timedelta(seconds=30)
 
 log = logging.getLogger(__name__)
 
-def ratelimited(limit=LIMIT, expires=EXPIRE):
+
 def ratelimited(cache, limit=LIMIT, expires=EXPIRE, ):
     def decorator(func):
         @functools.wraps(func)
