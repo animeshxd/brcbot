@@ -5,7 +5,7 @@ from pyrogram.types import Message, ForceReply
 
 from bot import client, db, college_notice_client
 from bot.decorators.managed_event import managed_event
-from bot.decorators.unimplemented import unimplimented
+from bot.decorators.unimplemented import unimplemented
 from bot.events import buttons as b
 from bot.events.notices.base.utils import for_week_only
 from bot.events.notices.events import handle
@@ -51,7 +51,7 @@ async def week(_c: Client, message: Message, *args, **kwargs):
     now = datetime.datetime.now()
     last = now - datetime.timedelta(weeks=1)
     await handle(_c, message, f'{now.strftime("%d %B, %Y")} - {last.strftime("%d %B, %Y")}',
-               async_generator=for_week_only(college_notice_client, last))
+                 async_generator=for_week_only(college_notice_client, last))
 
 
 @client.on_message(filters=filters.private & filters.regex('This Month'), group=G)
@@ -63,9 +63,9 @@ async def month(_c: Client, message: Message, *args, **kwargs):
 
 @client.on_message(filters=filters.private & filters.regex('By Date'), group=G)
 @managed_event
-@unimplimented(db)
+@unimplemented(db)
 async def search_by_date(_c: Client, message: Message, *args, **kwargs):
-    LAST = "2022-03-02"
+    #LAST = "2022-03-02"
     pass
 
 
