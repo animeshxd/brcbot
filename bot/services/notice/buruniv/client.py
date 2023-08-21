@@ -40,14 +40,19 @@ class UGUniversityNoticeClient(NoticeClient):
 
     async def fetch(self, type: UGUniversityNoticeType, *args, **kwargs) -> ResultSet[Tag]:
         async with self.session.get("/Demo/Template.php",
-                                    params={"menu": "NOT_EXAM", "submenu": type.value}) as response:
+                                    params={
+                                        UGUniversityNoticeType.Examination: {'menu': 'NOT_EXAM', 'submenu': 'EXAM_UG'},
+                                        UGUniversityNoticeType.Results: {'menu': 'NOT_EXRS', 'submenu': 'EXRS_UG'},
+                                        UGUniversityNoticeType.Admission: {'menu': 'NOT_ADMN', 'submenu': 'ADMN_UG'},
+                                    }[type]) as response:
             if not response.ok:
                 raise RuntimeError(f"response status not ok POST[{response.status}][{response.url}]")
             html = await response.text()
             soup = BeautifulSoup(html, 'lxml')
             data = soup.select("ol.notice_content_list > li > a")
+            safe = soup.select_one('.content-area-all-header')
 
-            if not data:
+            if not data and not safe:
                 raise ValueError("data is missing or empty")
 
             return data
