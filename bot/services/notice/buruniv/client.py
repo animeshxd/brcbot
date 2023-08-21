@@ -11,7 +11,8 @@ from bot.services.notice.interface import NoticeClient, NoticeType
 from bot.services.notice.buruniv.base import headers
 from bot.services.notice.parser import get_filename
 
-class UGUniversityNoticeType(enum.Enum):
+
+class UGUniversityNoticeType(NoticeType):
     Examination = "EXAM_UG"
     Admission = "ADMN_UG"
     Results = "EXRS_UG"
