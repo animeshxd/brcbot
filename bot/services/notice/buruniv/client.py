@@ -1,14 +1,13 @@
-import enum
 import logging
 from typing import AsyncGenerator, Tuple
 from urllib.parse import urljoin
 
 from aiohttp import ClientSession, ClientTimeout
 from bs4 import BeautifulSoup, ResultSet, Tag
-from bot.services.notice.data import Notice
 
-from bot.services.notice.interface import NoticeClient, NoticeType
 from bot.services.notice.buruniv.base import headers
+from bot.services.notice.data import Notice
+from bot.services.notice.interface import NoticeClient, NoticeType
 from bot.services.notice.parser import get_filename
 
 
@@ -27,7 +26,8 @@ class UGUniversityNoticeClient(NoticeClient):
     _buruniv = "https://buruniv.ac.in/bunew/"
     """
     https://www.buruniv.ac.in/Demo/Template.php?menu=NOT_EXAM&submenu=EXAM_UG
-    https://www.buruniv.ac.in/Demo/Template.php?menu=NOT_EXAM&submenu=EXAM_PS
+    https://www.buruniv.ac.in/Demo/Template.php?menu=NOT_ADMN&submenu=ADMN_UG
+    https://www.buruniv.ac.in/Demo/Template.php?menu=NOT_EXRS&submenu=EXRS_UG
     
     """
 
@@ -38,7 +38,7 @@ class UGUniversityNoticeClient(NoticeClient):
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.session.close()
 
-    async def fetch(self, type: UGUniversityNoticeType,  *args, **kwargs) -> ResultSet[Tag]:
+    async def fetch(self, type: UGUniversityNoticeType, *args, **kwargs) -> ResultSet[Tag]:
         async with self.session.get("/Demo/Template.php",
                                     params={"menu": "NOT_EXAM", "submenu": type.value}) as response:
             if not response.ok:
@@ -52,7 +52,10 @@ class UGUniversityNoticeClient(NoticeClient):
 
             return data
 
-    async def iter_notices(self, type: UGUniversityNoticeType, search: str | None = None,  *args, **kwargs) -> AsyncGenerator[Notice, None]:
+    async def iter_notices(self,
+                           type: UGUniversityNoticeType,
+                           search: str | None = None,
+                           *args, **kwargs) -> AsyncGenerator[Notice, None]:
         result = await self.fetch(type)
         for i in result:
             subject = i.text.strip()
@@ -66,7 +69,10 @@ class UGUniversityNoticeClient(NoticeClient):
             else:
                 yield Notice(fileurl, filename, subject=subject)
 
-    async def iter_after(self, file_id: str, type: UGUniversityNoticeType,  *args, **kwargs) -> AsyncGenerator[Tuple[int, Notice], None]:
+    async def iter_after(self,
+                         file_id: str,
+                         type: UGUniversityNoticeType,
+                         *args, **kwargs) -> AsyncGenerator[Tuple[int, Notice], None]:
         found = False
         result = await self.fetch(type=type)
         for index, i in zip(range(len(result), -1, -1), reversed(result)):
@@ -81,12 +87,3 @@ class UGUniversityNoticeClient(NoticeClient):
             if file_id == filename:
                 found = True
                 continue
-
-
-
-
-
-
-
-
-
