@@ -13,7 +13,7 @@ from bot.events.notices.events import handle
 G = 4
 
 
-@client.on_message(filters=filters.private & filters.regex('Notices|𝖡𝖺𝖼𝗄') | filters.command('notices'), group=G)
+@client.on_message(filters=filters.private & filters.regex('^Notices$|𝖡𝖺𝖼𝗄') | filters.command('notices'), group=G)
 @managed_event
 async def notices(_c: Client, message: Message, *args, **kwargs):
     await db(_c.send_message(message.chat.id, "Notices", reply_markup=b.notice_buttons))
