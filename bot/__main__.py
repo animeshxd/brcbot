@@ -31,6 +31,7 @@ if __name__ == '__main__':
     import bot.events.settings
     import bot.events.notices
     import bot.events.about
+    import bot.events.buruniv.notices
 
     client.storage = MongoStorage(mongo.db) # type: ignore
     scheduler = start_scheduler(client, college_notice_client, university_notice_client)

@@ -21,6 +21,7 @@ menu_buttons = ReplyKeyboardMarkup(
         ['Notices'],
         # ['Online Examination Updates'],
         ['Online Admission'],
+        ['Notices from University'],
         ['About']
     ],
     resize_keyboard=True
