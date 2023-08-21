@@ -13,7 +13,8 @@ buttons = ReplyKeyboardMarkup(
         ["Result"],
         ["Admission"],
         ["Menu"]
-    ]
+    ],
+    resize_keyboard=True
 )
 
 
